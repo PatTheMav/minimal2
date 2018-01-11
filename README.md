@@ -1,21 +1,25 @@
-# MINIMAL
-A minimal and extensible zsh theme.
+# MINIMALZIM
+A minimal and extensible zsh theme. Forked from [subnixr's original](https://github.com/subnixr/minimal) and adapted for [Zimfw](https://github.com/zimfw/zimfw).
 
 # Screencast
 [![asciicast](https://asciinema.org/a/RZthpXkg9b7KdKRGjySsC83wx.png)](https://asciinema.org/a/RZthpXkg9b7KdKRGjySsC83wx)
 
 # Installation
-[Zgen](https://github.com/tarjoilija/zgen):
+
+1. Clone (or add as submodule) minimalzim to your `zimfw` modules directory:
+
 ```
-zgen load subnixr/minimal
+cd ${ZIM_HOME}/modules; git clone https://github.com/PatTheMav/minimalzim.git ./minimal2
 ```
 
-[Antigen](https://github.com/zsh-users/antigen):
-```
-antigen theme subnixr/minimal
-```
+2. Add `minimal2` to your `zmodules` inside your `.zshrc` (preferably after the `prompt` module).
+3. Set the prompt theme by setting `zprompt_theme` to `minimal2`
 
-Otherwise, you can always clone the repo and source `minimal.zsh`.
+# Changes from original `minimal.zsh`
+
+* Additional support for `git-info` module to display git branch
+* Additional colour for clean branches ahead or behind the remote branch
+* Uses `prompt_opts` and seperate setup routine for `zimfw` compatibility
 
 # Customization and extension
 ## Architecture
@@ -33,6 +37,7 @@ Different components can use these (global) settings:
 
 - `MNML_OK_COLOR`: Color for successful things (default: `2`)
 - `MNML_ERR_COLOR`: Color for failures (default: `1`)
+- `MNML_DIV_COLOR`: Color for diverted git status (default: `5`)
 - `MNML_USER_CHAR`: Character used for unprivileged users (default: `λ`)
 - `MNML_INSERT_CHAR`: Character used for vi insert mode (default: `›`)
 - `MNML_NORMAL_CHAR`: Character used for vi normal mode (default: `·`)
@@ -94,7 +99,7 @@ If `N` is not specified, it will take a default value of `2`. If is specified bu
 
 If `LEN` is not specified or `LEN <= 0` no truncation will be performed on the segments. If `0 < LEN < 4` it will be set to `4`.
 
-When a segment length is greater than `LEN`'s value, the first `LEN / 2 - 1` characters are printed, followed by `..`, followed by the last `LEN / 2 - 1` characters.  
+When a segment length is greater than `LEN`'s value, the first `LEN / 2 - 1` characters are printed, followed by `..`, followed by the last `LEN / 2 - 1` characters.
 For example, with `LEN = 8` and `0123456789` as segment, `012..789` is displayed.
 
 ### Git branch status
@@ -104,6 +109,12 @@ For example, with `LEN = 8` and `0123456789` as segment, `012..789` is displayed
 **Syntax**: `mnml_git`
 
 Displays the current git's branch, only if inside a git repo. Color is set to `$MNML_OK_COLOR` if the branch is clean, `$MNML_ERR_COLOR` if the branch is dirty.
+
+#### Using git-info
+
+**Syntax**: `mnml_git_zimfw`
+
+Same functionality as `mnml_git`, but uses zimfw's built-in `git-info` to display and style git information. Uses the additional `$MNML_DIV_COLOR` if the branch is ahead or behind the remote branch.
 
 ### User, Hostname & PWD
 
@@ -186,7 +197,7 @@ function awesome_magicenter {
   figlet -f slant "COOL"
 }
 
-source minimal.zsh
+source minimalplus.zsh
 
 MNML_PROMPT=(awesome_component $MNML_PROMPT)
 MNML_MAGICENTER+=awesome_magicenter
@@ -194,14 +205,14 @@ MNML_MAGICENTER+=awesome_magicenter
 
 Due to minimal's architecture, if you need the value of the last command exit status (`$?`), `$MNML_LAST_ERR` must be used. `$?` can  still be used to check for errors inside the component.
 
-# Congiguration examples:
+# Configuration examples:
 ## no UTF-8
 
 ```
 MNML_USER_CHAR='$'
 MNML_NOMRAL_CHAR='-'
 MNML_INSERT_CHAR='>'
-source minimal.zsh
+source minimalplus.zsh
 ```
 
 Result (right omitted): `$ >`
@@ -211,7 +222,7 @@ Result (right omitted): `$ >`
 ```
 MNML_PROMPT=(mnml_uhp mnml_status mnml_keymap)
 MNML_RPROMPT=()
-source minimal.zsh
+source minimalplus.zsh
 ```
 
 Result: `user@host:~ λ ›          `
@@ -223,11 +234,11 @@ MNML_PROMPT=(mnml_status)
 MNML_RPROMPT=()
 MNML_INFOLN=()
 MNML_MAGICENTER=()
-source minimal.zsh
+source minimalplus.zsh
 ```
 
 Result: `λ                        `
 
-# Transition from 0.1.0
+# CREDITS
 
-Check this [gist](https://gist.github.com/subnixr/ea5a5180ab2c193e6ca1238b4dbbc8bd)
+Original minimal theme by subnixr on Github: https://github.com/subnixr/minimal
