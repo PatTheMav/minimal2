@@ -12,7 +12,7 @@ A minimal and extensible zsh theme. Forked from [subnixr's original](https://git
 cd ${ZIM_HOME}/modules; git clone https://github.com/PatTheMav/minimalzim.git ./minimal2
 ```
 
-2. Add `minimal2` to your `zmodules` inside your `.zshrc` (preferably after the `prompt` module).
+2. Add `minimal2` to your `zmodules` inside your `.zshrc` (just before the `prompt` module).
 3. Set the prompt theme by setting `zprompt_theme` to `minimal2`
 
 # Changes from original `minimal.zsh`
