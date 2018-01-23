@@ -79,10 +79,7 @@ function mnml_cwd {
 }
 
 function mnml_git {
-  # git
-  if [[ -n ${git_info} ]]; then
-    echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}%{\e[0m%}"
-  fi
+  [[ -n ${git_info} ]] && echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}%{\e[0m%}"
 }
 
 function mnml_uhp {
@@ -221,6 +218,59 @@ function mnml_buffer_empty {
   fi
 }
 
+prompt_minimal2_help() {
+  cat <<EOH
+  This prompt can be customized by setting environment variables in your
+  .zshrc:
+
+  - MNML_OK_COLOR: Color for successful things (default: '2')
+  - MNML_ERR_COLOR: Color for failures (default: '1')
+  - MNML_DIV_COLOR: Color for diverted git status (default: '5')
+  - MNML_USER_CHAR: Character used for unprivileged users (default: 'λ')
+  - MNML_INSERT_CHAR: Character used for vi insert mode (default: '›')
+  - MNML_NORMAL_CHAR: Character used for vi normal mode (default: '·')
+
+  --------------------------------------------------------------------------
+
+  Three global arrays handle the definition and rendering position of the components:
+
+  - Components on the left prompt
+    MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
+
+  - Components on the right prompt
+    MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
+
+  - Components shown on info line
+    MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
+
+  --------------------------------------------------------------------------
+
+  An additional array is used to configure magic enter's behavior:
+
+    MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
+
+  --------------------------------------------------------------------------
+
+  Also some characters and colors can be set with direct prompt parameters
+  (those will override the environment vars):
+
+  prompt minimal2 [mnml_ok_color] [mnml_err_color] [mnml_div_color]
+                  [mnml_user_char] [mnml_insert_char] [mnml_normal_char]
+
+  --------------------------------------------------------------------------
+EOH
+}
+
+prompt_minimal2_preview() {
+  if (( ${#} )); then
+    prompt_preview_theme minimal2 "${@}"
+  else
+    prompt_preview_theme minimal2
+    print
+    prompt_preview_theme minimal2 2 1 5 '#' '>' 'o'
+  fi
+}
+
 prompt_minimal2_precmd() {
   (( ${+functions[git-info]} )) && git-info
 }
@@ -228,7 +278,6 @@ prompt_minimal2_precmd() {
 prompt_minimal2_setup() {
   # Setup
   autoload -Uz colors && colors
-  autoload -Uz add-zsh-hook
 
   prompt_opts=(cr percent sp subst)
 
@@ -236,7 +285,14 @@ prompt_minimal2_setup() {
   zle -N zle-keymap-select mnml_keymap_select
   zle -N buffer-empty mnml_buffer_empty
 
-  add-zsh-hook precmd prompt_minimal2_precmd
+  MNML_OK_COLOR="${${1}:-${MNML_OK_COLOR}}"
+  MNML_ERR_COLOR="${${2}:-${MNML_ERR_COLOR}}"
+  MNML_DIV_COLOR="${${3}:-${MNML_DIV_COLOR}}"
+  MNML_USER_CHAR="${${4}:-${MNML_USER_CHAR}}"
+  MNML_INSERT_CHAR="${${5}:-${MNML_INSERT_CHAR}}"
+  MNML_NORMAL_CHAR="${${6}:-${MNML_NORMAL_CHAR}}"
+
+  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_minimal2_precmd
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'
@@ -248,11 +304,11 @@ prompt_minimal2_setup() {
     'prompt' '%b%c' \
     'color' '$(coalesce "%D" "%V" "%B" "%A" "%{\e[0;3${MNML_OK_COLOR}m%}")'
 
-  PROMPT='$(mnml_wrap MNML_PROMPT) '
-  RPROMPT='$(mnml_wrap MNML_RPROMPT)'
+  PS1='$(mnml_wrap MNML_PROMPT) '
+  RPS1='$(mnml_wrap MNML_RPROMPT)'
 
   bindkey -M main "^M" buffer-empty
   bindkey -M vicmd "^M" buffer-empty
 }
 
-prompt_minimal2_setup "$@"
+prompt_minimal2_setup "${@}"
