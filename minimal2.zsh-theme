@@ -7,10 +7,10 @@
 
 function {
   # Global settings
-  MNML_OK_COLOR="${MNML_OK_COLOR:-2}"
-  MNML_ERR_COLOR="${MNML_ERR_COLOR:-1}"
+  MNML_OK_COLOR="${MNML_OK_COLOR:-green}"
+  MNML_ERR_COLOR="${MNML_ERR_COLOR:-red}"
   # ADDED FOR ZIMFW
-  MNML_DIV_COLOR="${MNML_DIV_COLOR:-5}"
+  MNML_DIV_COLOR="${MNML_DIV_COLOR:-magenta}"
 
   MNML_USER_CHAR="${MNML_USER_CHAR:-λ}"
   MNML_INSERT_CHAR="${MNML_INSERT_CHAR:-›}"
@@ -25,21 +25,9 @@ function {
 
 # Components
 function mnml_status {
-  local okc="${MNML_OK_COLOR}"
-  local errc="${MNML_ERR_COLOR}"
-  local uchar="${MNML_USER_CHAR}"
+  local status = "%F{%(?.${MNML_OK_COLOR}.${MNML_ERR_COLOR})}%(!.#.${MNML_USER_CHAR})%f"
 
-  local job_ansi="0"
-  if [ -n "$(jobs | sed -n '$=')" ]; then
-    job_ansi="4"
-  fi
-
-  local err_ansi="${MNML_OK_COLOR}"
-  if [ "${MNML_LAST_ERR}" != "0" ]; then
-    err_ansi="${MNML_ERR_COLOR}"
-  fi
-
-  echo -n "%{\e[$job_ansi;3${err_ansi}m%}%(!.#.$uchar)%{\e[0m%}"
+  echo -n "%(1j.%U${status}%u.${status})"
 }
 
 function mnml_keymap {
@@ -51,9 +39,6 @@ function mnml_keymap {
 function mnml_cwd {
   local segments="${1:-2}"
   local seg_len="${2:-0}"
-
-  local _w="%{\e[0m%}"
-  local _g="%{\e[38;5;244m%}"
 
   if [ "${segments}" -le 0 ]; then
     segments=1
@@ -71,24 +56,22 @@ function mnml_cwd {
   for i in {1..${#cwd}}; do
     pi="$cwd[$i]"
     if [ "${seg_len}" -gt 0 ] && [ "${#pi}" -gt "${seg_len}" ]; then
-      cwd[$i]="${pi:0:$seg_hlen}$_w..$_g${pi: -$seg_hlen}"
+      cwd[$i]="${pi:0:$seg_hlen}%F{white}..%f%F{grey}${pi: -$seg_hlen}%f"
     fi
   done
 
-  echo -n "$_g${(j:/:)cwd//\//$_w/$_g}$_w"
+  echo -n "${(j:/:)%F{grey}cwd%f//\//%F{white}/%f}"
 }
 
 function mnml_git {
-  [[ -n ${git_info} ]] && echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}%{\e[0m%}"
+  [[ -n ${git_info} ]] && echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}"
 }
 
 function mnml_uhp {
-  local _w="%{\e[0m%}"
-  local _g="%{\e[38;5;244m%}"
   local cwd="%~"
   cwd="${(%)cwd}"
 
-  echo -n "$_g%n$_w@$_g%m$_w:$_g${cwd//\//$_w/$_g}$_w"
+  echo -n "%F{grey}%n%f%F{white}@%f%F{grey}%m%f%F{white}:%f${%F{grey}cwd%f//\//%F{white}/%f}"
 }
 
 function mnml_ssh {
@@ -105,49 +88,33 @@ function mnml_pyenv {
 }
 
 function mnml_err {
-  local _w="%{\e[0m%}"
-  local _err="%{\e[3${MNML_ERR_COLOR}m%}"
-
-  if [ "${MNML_LAST_ERR:-0}" != "0" ]; then
-    echo -n "${_err}${MNML_LAST_ERR}${_w}"
-  fi
+  echo -n "%(?.%F{${MNML_ERR_COLOR}}${MNML_LAST_ERR}%f.)"
 }
 
 function mnml_jobs {
-  local _w="%{\e[0m%}"
-  local _g="%{\e[38;5;244m%}"
-
-  local job_n="$(jobs | sed -n '$=')"
-  if [ "${job_n}" -gt 0 ]; then
-    echo -n "${_g}${job_n}${_w}&"
-  fi
+  echo -n "%(1j.%F{grey}%j&%f.)"
 }
 
 function mnml_files {
-  local _w="%{\e[0m%}"
-  local _g="%{\e[38;5;244m%}"
-
   local a_files="$(ls -1A | sed -n '$=')"
   local v_files="$(ls -1 | sed -n '$=')"
   local h_files="$((a_files - v_files))"
 
-  local output="${_w}[${_g}${v_files:-0}"
+  local output="[%F{grey}${v_files:-0}%f"
+
   if [ "${h_files:-0}" -gt 0 ]; then
-    output="$output $_w(${_g}$h_files${_w})"
+    output="$output (%F{grey}$h_files%f)"
   fi
-  output="${output}${_w}]"
+  output="${output}]"
 
   echo -n "${output}"
 }
 
 # Magic enter functions
 function mnml_me_dirs {
-  local _w="\e[0m"
-  local _g="\e[38;5;244m"
-
   if [ "$(dirs -p | sed -n '$=')" -gt 1 ]; then
     local stack="$(dirs)"
-    echo "${_g}${stack//\//${_w}/${_g}}${_w}"
+    echo "%F{grey}${stack//\//%F{white}/%f}%f"
   fi
 }
 
@@ -223,9 +190,9 @@ prompt_minimal2_help() {
   This prompt can be customized by setting environment variables in your
   .zshrc:
 
-  - MNML_OK_COLOR: Color for successful things (default: '2')
-  - MNML_ERR_COLOR: Color for failures (default: '1')
-  - MNML_DIV_COLOR: Color for diverted git status (default: '5')
+  - MNML_OK_COLOR: Color for successful things (default: 'green')
+  - MNML_ERR_COLOR: Color for failures (default: 'red')
+  - MNML_DIV_COLOR: Color for diverted git status (default: 'magenta')
   - MNML_USER_CHAR: Character used for unprivileged users (default: 'λ')
   - MNML_INSERT_CHAR: Character used for vi insert mode (default: '›')
   - MNML_NORMAL_CHAR: Character used for vi normal mode (default: '·')
@@ -277,8 +244,6 @@ prompt_minimal2_precmd() {
 
 prompt_minimal2_setup() {
   # Setup
-  autoload -Uz colors && colors
-
   prompt_opts=(cr percent sp subst)
 
   zle -N zle-line-init mnml_line_init
@@ -296,13 +261,13 @@ prompt_minimal2_setup() {
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'
-  zstyle ':zim:git-info:dirty' format '%{\e[0;3${MNML_ERR_COLOR}m%}'
-  zstyle ':zim:git-info:diverged' format '%{\e[0;3${MNML_DIV_COLOR}m%}'
-  zstyle ':zim:git-info:behind' format '%{\e[0;3${MNML_DIV_COLOR}m%}↓ '
-  zstyle ':zim:git-info:ahead' format '%{\e[0;3${MNML_DIV_COLOR}m%}↑ '
+  zstyle ':zim:git-info:dirty' format '%F{${MNML_ERR_COLOR}}'
+  zstyle ':zim:git-info:diverged' format '%F{${MNML_DIV_COLOR}}'
+  zstyle ':zim:git-info:behind' format '%F{${MNML_DIV_COLOR}}↓ '
+  zstyle ':zim:git-info:ahead' format '%F{${MNML_DIV_COLOR}}↑ '
   zstyle ':zim:git-info:keys' format \
     'prompt' '%b%c' \
-    'color' '$(coalesce "%D" "%V" "%B" "%A" "%{\e[0;3${MNML_OK_COLOR}m%}")'
+    'color' '$(coalesce "%D" "%V" "%B" "%A" "%F{${MNML_OK_COLOR}}")'
 
   PS1='$(mnml_wrap MNML_PROMPT) '
   RPS1='$(mnml_wrap MNML_RPROMPT)'

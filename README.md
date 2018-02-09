@@ -35,9 +35,9 @@ A component should work in any of the three areas (left, right, info)
 ## Override default settings
 Different components can use these (global) settings:
 
-- `MNML_OK_COLOR`: Color for successful things (default: `2`)
-- `MNML_ERR_COLOR`: Color for failures (default: `1`)
-- `MNML_DIV_COLOR`: Color for diverted git status (default: `5`)
+- `MNML_OK_COLOR`: Color for successful things (default: `green`)
+- `MNML_ERR_COLOR`: Color for failures (default: `red`)
+- `MNML_DIV_COLOR`: Color for diverted git status (default: `magenta`)
 - `MNML_USER_CHAR`: Character used for unprivileged users (default: `λ`)
 - `MNML_INSERT_CHAR`: Character used for vi insert mode (default: `›`)
 - `MNML_NORMAL_CHAR`: Character used for vi normal mode (default: `·`)
