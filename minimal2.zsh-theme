@@ -25,9 +25,9 @@ function {
 
 # Components
 function mnml_status {
-  local status = "%F{%(?.${MNML_OK_COLOR}.${MNML_ERR_COLOR})}%(!.#.${MNML_USER_CHAR})%f"
+  local output="%F{%(?.${MNML_OK_COLOR}.${MNML_ERR_COLOR})}%(!.#.${MNML_USER_CHAR})%f"
 
-  echo -n "%(1j.%U${status}%u.${status})"
+  echo -n "%(1j.%U${output}%u.${output})"
 }
 
 function mnml_keymap {
@@ -56,11 +56,11 @@ function mnml_cwd {
   for i in {1..${#cwd}}; do
     pi="$cwd[$i]"
     if [ "${seg_len}" -gt 0 ] && [ "${#pi}" -gt "${seg_len}" ]; then
-      cwd[$i]="${pi:0:$seg_hlen}%F{white}..%f%F{grey}${pi: -$seg_hlen}%f"
+      cwd[$i]="%F{244}${pi:0:$seg_hlen}%F{white}..%F{244}${pi: -$seg_hlen}%f"
     fi
   done
 
-  echo -n "${(j:/:)%F{grey}cwd%f//\//%F{white}/%f}"
+  echo -n "%F{244}${(j:/:)cwd//\//%F{white\}/%F{244\}}%f"
 }
 
 function mnml_git {
@@ -71,7 +71,7 @@ function mnml_uhp {
   local cwd="%~"
   cwd="${(%)cwd}"
 
-  echo -n "%F{grey}%n%f%F{white}@%f%F{grey}%m%f%F{white}:%f${%F{grey}cwd%f//\//%F{white}/%f}"
+  echo -n "%F{244}%n%F{white}@%F{244}%m%F{white}:%F{244}${cwd//\//%F{white\}/%f%F{244\}}%f"
 }
 
 function mnml_ssh {
@@ -88,11 +88,11 @@ function mnml_pyenv {
 }
 
 function mnml_err {
-  echo -n "%(?.%F{${MNML_ERR_COLOR}}${MNML_LAST_ERR}%f.)"
+  echo -n "%(0?..%F{${MNML_ERR_COLOR}}${MNML_LAST_ERR}%f)"
 }
 
 function mnml_jobs {
-  echo -n "%(1j.%F{grey}%j&%f.)"
+  echo -n "%(1j.%F{244}%j&%f.)"
 }
 
 function mnml_files {
@@ -100,10 +100,10 @@ function mnml_files {
   local v_files="$(ls -1 | sed -n '$=')"
   local h_files="$((a_files - v_files))"
 
-  local output="[%F{grey}${v_files:-0}%f"
+  local output="[%F{244}${v_files:-0}%f"
 
   if [ "${h_files:-0}" -gt 0 ]; then
-    output="$output (%F{grey}$h_files%f)"
+    output="$output (%F{244}$h_files%f)"
   fi
   output="${output}]"
 
@@ -114,7 +114,7 @@ function mnml_files {
 function mnml_me_dirs {
   if [ "$(dirs -p | sed -n '$=')" -gt 1 ]; then
     local stack="$(dirs)"
-    echo "%F{grey}${stack//\//%F{white}/%f}%f"
+    echo -n "%F{244}${stack//\//%F{white\}/%F{244\}}%f"
   fi
 }
 
@@ -157,7 +157,7 @@ function mnml_me {
   for cmd in ${MNML_MAGICENTER}; do
     cmd_out="$(eval "$cmd")"
     if [ -n "${cmd_out}" ]; then
-      output+="${cmd_out}"
+      output+="${(%)cmd_out}"
     fi
   done
   echo -n "${(j:\n:)output}" | less -XFR
