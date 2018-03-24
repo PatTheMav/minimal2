@@ -166,6 +166,11 @@ function mnml_me {
 # capture exit status and reset prompt
 function mnml_line_init {
   MNML_LAST_ERR="$?" # I need to capture this ASAP
+
+  if (( ${+commands[zle-line-init]} )); then
+    zle-line-init
+  fi
+
   zle reset-prompt
 }
 
