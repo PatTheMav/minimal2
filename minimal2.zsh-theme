@@ -239,7 +239,7 @@ prompt_minimal2_preview() {
   else
     prompt_preview_theme minimal2
     print
-    prompt_preview_theme minimal2 2 1 5 '#' '>' 'o'
+    prompt_preview_theme minimal2 'green' 'red' 'magenta' '#' '>' 'o'
   fi
 }
 
