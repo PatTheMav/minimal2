@@ -24,19 +24,19 @@ function {
 }
 
 # Components
-function mnml_status {
+mnml_status() {
   local output="%F{%(?.${MNML_OK_COLOR}.${MNML_ERR_COLOR})}%(!.#.${MNML_USER_CHAR})%f"
 
   echo -n "%(1j.%U${output}%u.${output})"
 }
 
-function mnml_keymap {
+mnml_keymap() {
   local kmstat="${MNML_INSERT_CHAR}"
   [ "$KEYMAP" = 'vicmd' ] && kmstat="${MNML_NORMAL_CHAR}"
   echo -n "${kmstat}"
 }
 
-function mnml_cwd {
+mnml_cwd() {
   local segments="${1:-2}"
   local seg_len="${2:-0}"
 
@@ -63,39 +63,39 @@ function mnml_cwd {
   echo -n "%F{244}${(j:/:)cwd//\//%F{white\}/%F{244\}}%f"
 }
 
-function mnml_git {
+mnml_git() {
   [[ -n ${git_info} ]] && echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}"
 }
 
-function mnml_uhp {
+mnml_uhp() {
   local cwd="%~"
   cwd="${(%)cwd}"
 
   echo -n "%F{244}%n%F{white}@%F{244}%m%F{white}:%F{244}${cwd//\//%F{white\}/%f%F{244\}}%f"
 }
 
-function mnml_ssh {
+mnml_ssh() {
   if [ -n "${SSH_CLIENT}" ] || [ -n "${SSH_TTY}" ]; then
     echo -n "$(hostname -s)"
   fi
 }
 
-function mnml_pyenv {
+mnml_pyenv() {
   if [ -n "${VIRTUAL_ENV}" ]; then
     _venv="$(basename ${VIRTUAL_ENV})"
     echo -n "${_venv%%.*}"
   fi
 }
 
-function mnml_err {
+mnml_err() {
   echo -n "%(0?..%F{${MNML_ERR_COLOR}}${MNML_LAST_ERR}%f)"
 }
 
-function mnml_jobs {
+mnml_jobs() {
   echo -n "%(1j.%F{244}%j&%f.)"
 }
 
-function mnml_files {
+mnml_files() {
   local a_files="$(ls -1A | sed -n '$=')"
   local v_files="$(ls -1 | sed -n '$=')"
   local h_files="$((a_files - v_files))"
@@ -111,14 +111,14 @@ function mnml_files {
 }
 
 # Magic enter functions
-function mnml_me_dirs {
+mnml_me_dirs() {
   if [ "$(dirs -p | sed -n '$=')" -gt 1 ]; then
     local stack="$(dirs)"
     echo -n "%F{244}${stack//\//%F{white\}/%F{244\}}%f"
   fi
 }
 
-function mnml_me_ls {
+mnml_me_ls() {
   if [ "$(uname)" = "Darwin" ] && ! ls --version &> /dev/null; then
     COLUMNS=${COLUMNS} CLICOLOR_FORCE=1 ls -C -G -F
   else
@@ -126,13 +126,13 @@ function mnml_me_ls {
   fi
 }
 
-function mnml_me_git {
+mnml_me_git() {
   git -c color.status=always status -sb 2> /dev/null
 }
 
 # Wrappers & utils
 # join outpus of components
-function mnml_wrap {
+mnml_wrap() {
   local arr=()
   local cmd_out=""
   local cmd
@@ -147,12 +147,12 @@ function mnml_wrap {
 }
 
 # expand string as prompt would do
-function mnml_iline {
+mnml_iline() {
   echo "${(%)1}"
 }
 
 # display magic enter
-function mnml_me {
+mnml_me() {
   local output=()
   local cmd_output=""
   local cmd
@@ -166,20 +166,20 @@ function mnml_me {
 }
 
 # capture exit status and reset prompt
-function mnml_zle-line-init {
+mnml_zle-line-init() {
   MNML_LAST_ERR="$?" # I need to capture this ASAP
 
   zle reset-prompt
 }
 
 # redraw prompt on keymap select
-function mnml_zle-keymap-select {
+mnml_zle-keymap-select() {
   zle reset-prompt
 }
 
 # draw infoline if no command is given
-function mnml_buffer-empty {
-  if [ -z "${BUFFER}" ]; then
+mnml_buffer-empty() {
+  if [ -z "${BUFFER}" ] && [ "${prompt_theme}" = "minimal2" ]; then
     mnml_iline "$(mnml_wrap MNML_INFOLN)"
     mnml_me
     # zle redisplay
@@ -191,7 +191,7 @@ function mnml_buffer-empty {
 
 # Safely bind widgets
 # see: https://github.com/zsh-users/zsh-syntax-highlighting/blob/1f1e629290773bd6f9673f364303219d6da11129/zsh-syntax-highlighting.zsh#L292-L356
-function prompt_minimal2_bind {
+prompt_minimal2_bind() {
   zmodload zsh/zleparameter
 
   local bindings=(zle-line-init zle-keymap-select buffer-empty)
@@ -302,5 +302,3 @@ prompt_minimal2_setup() {
   bindkey -M main "^M" buffer-empty
   bindkey -M vicmd "^M" buffer-empty
 }
-
-prompt_minimal2_setup "${@}"

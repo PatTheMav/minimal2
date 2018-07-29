@@ -1,1 +1,1 @@
-../minimal2.zsh-theme
+prompt_minimal2_setup "${@}"
