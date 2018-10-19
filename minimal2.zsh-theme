@@ -16,11 +16,11 @@ function {
   MNML_INSERT_CHAR="${MNML_INSERT_CHAR:-›}"
   MNML_NORMAL_CHAR="${MNML_NORMAL_CHAR:-·}"
 
-  [ -z "$MNML_PROMPT" ] && MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
-  [ -z "$MNML_RPROMPT" ] && MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
-  [ -z "$MNML_INFOLN" ] && MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
+  [ "${+$MNML_PROMPT}" -eq 0 ] && MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
+  [ "${+$MNML_RPROMPT}" -eq 0] && MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
+  [ "${+$MNML_INFOLN}" -eq 0] && MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
 
-  [ -z "$MNML_MAGICENTER" ] && MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
+  [ "${+$MNML_MAGICENTER}" -eq 0 ] && MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
 }
 
 # Components
@@ -133,7 +133,8 @@ mnml_me_git() {
 # Wrappers & utils
 # join outpus of components
 mnml_wrap() {
-  local arr=()
+  local -a arr
+  arr=()
   local cmd_out=""
   local cmd
   for cmd in ${(P)1}; do
@@ -153,7 +154,8 @@ mnml_iline() {
 
 # display magic enter
 mnml_me() {
-  local output=()
+  local -a output
+  output=()
   local cmd_output=""
   local cmd
   for cmd in ${MNML_MAGICENTER}; do
@@ -194,7 +196,8 @@ mnml_buffer-empty() {
 prompt_minimal2_bind() {
   zmodload zsh/zleparameter
 
-  local bindings=(zle-line-init zle-keymap-select buffer-empty)
+  local -a bindings
+  bindings=(zle-line-init zle-keymap-select buffer-empty)
 
   typeset -F SECONDS
   local zle_prefix="s${SECONDS}-r${RANDOM}"
