@@ -64,7 +64,7 @@ mnml_cwd() {
 }
 
 mnml_git() {
-  [[ -n ${git_info} ]] && echo -n " ${(e)git_info[color]}${(e)git_info[prompt]}"
+  [[ -n ${git_info} ]] && echo -n " ${(e)git_info[color]}${(e)git_info[rprompt]}"
 }
 
 mnml_uhp() {
@@ -296,7 +296,8 @@ prompt_minimal2_setup() {
   zstyle ':zim:git-info:behind' format '%F{${MNML_DIV_COLOR}}↓ '
   zstyle ':zim:git-info:ahead' format '%F{${MNML_DIV_COLOR}}↑ '
   zstyle ':zim:git-info:keys' format \
-    'prompt' '%b%c' \
+    'prompt' '' \
+    'rprompt' '%b%c' \
     'color' '$(coalesce "%D" "%V" "%B" "%A" "%F{${MNML_OK_COLOR}}")'
 
   PS1='$(mnml_wrap MNML_PROMPT) '
