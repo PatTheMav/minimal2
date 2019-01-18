@@ -276,7 +276,8 @@ prompt_minimal2_precmd() {
 
 prompt_minimal2_setup() {
   # Setup
-  prompt_opts=(cr percent sp subst)
+  prompt_opts=( cr percent sp subst )
+  setopt noprompt{bang,cr,percent,sp,subst} "prompt${^prompt_opts[@]}"
 
   prompt_minimal2_bind
 
@@ -305,3 +306,5 @@ prompt_minimal2_setup() {
   bindkey -M main "^M" buffer-empty
   bindkey -M vicmd "^M" buffer-empty
 }
+
+prompt_minimal2_setup "${@}"
