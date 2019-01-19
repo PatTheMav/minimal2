@@ -275,9 +275,10 @@ prompt_minimal2_precmd() {
 }
 
 prompt_minimal2_setup() {
+  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_minimal2_precmd
+
   # Setup
-  prompt_opts=( cr percent sp subst )
-  setopt noprompt{bang,cr,percent,sp,subst} "prompt${^prompt_opts[@]}"
+  setopt nopromptbang promptcr promptpercent promptsp promptsubst
 
   prompt_minimal2_bind
 
@@ -288,7 +289,6 @@ prompt_minimal2_setup() {
   MNML_INSERT_CHAR="${${5}:-${MNML_INSERT_CHAR}}"
   MNML_NORMAL_CHAR="${${6}:-${MNML_NORMAL_CHAR}}"
 
-  autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_minimal2_precmd
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'
