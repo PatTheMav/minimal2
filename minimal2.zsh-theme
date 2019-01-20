@@ -276,6 +276,7 @@ prompt_minimal2_precmd() {
 
 prompt_minimal2_setup() {
   autoload -Uz add-zsh-hook && add-zsh-hook precmd prompt_minimal2_precmd
+  prompt_opts=( cr percent sp subst )
   setopt nopromptbang promptcr promptpercent promptsp promptsubst
   prompt_minimal2_bind
 
