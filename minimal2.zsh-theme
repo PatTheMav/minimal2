@@ -181,7 +181,7 @@ mnml_zle-keymap-select() {
 
 # draw infoline if no command is given
 mnml_buffer-empty() {
-  if [ -z "${BUFFER}" ] && [ "${prompt_theme}" = "minimal2" ]; then
+  if [ -z "${BUFFER}" ] && [ ! "${+MNML_MAGICENTER}" -eq 0 ]; then
     mnml_iline "$(mnml_wrap MNML_INFOLN)"
     mnml_me
     # zle redisplay
