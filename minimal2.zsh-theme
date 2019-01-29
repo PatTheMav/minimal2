@@ -7,6 +7,7 @@
 
 function {
   zstyle -s ':color:ok' minimal2 'MNML_OK_COLOR' || MNML_OK_COLOR=${MNML_OK_COLOR:-'green'}
+  zstyle -s ':color:clean' minimal2 'MNML_CLEAN_COLOR' || MNML_CLEAN_COLOR=${MNML_CLEAN_COLOR:-'green'}
   zstyle -s ':color:error' minimal2 'MNML_ERR_COLOR' || MNML_ERR_COLOR=${MNML_ERR_COLOR:-'red'}
   zstyle -s ':color:diverged' minimal2 'MNML_DIV_COLOR' || MNML_DIV_COLOR=${MNML_DIV_COLOR:-'magenta'}
   zstyle -s ':color:dirty' minimal2 'MNML_DIRTY_COLOR' || MNML_DIRTY_COLOR=${MNML_DIRTY_COLOR:-'red'}
@@ -236,6 +237,7 @@ prompt_minimal2_help() {
 
   - MNML_OK_COLOR     : Color for successful things (default: 'green')
   - MNML_ERR_COLOR    : Color for failures (default: 'red')
+  - MNML_CLEAN_COLOR    : Color for clean git status (default: 'green')
   - MNML_DIV_COLOR    : Color for diverged git status (default: 'magenta')
   - MNML_AHEAD_COLOR  : Color for repositories ahead of master (default: 'cyan')
   - MNML_BEHIND_COLOR : Color for repositories behind of master (default: 'cyan')
@@ -312,10 +314,11 @@ prompt_minimal2_setup() {
   zstyle ':zim:git-info:diverged' format '%F{${MNML_DIV_COLOR}}${MNML_DIV_CHAR}'
   zstyle ':zim:git-info:behind' format '%F{${MNML_DIRTY_COLOR}}${MNML_BEHIND_CHAR}'
   zstyle ':zim:git-info:ahead' format '%F{${MNML_AHEAD_COLOR}}${MNML_AHEAD_CHAR}'
+  zstyle ':zim:git-info:clean' format '%F{${MNML_CLEAN_COLOR}}${MNML_CLEAN_CHAR}'
   zstyle ':zim:git-info:keys' format \
     'prompt' '' \
     'rprompt' '%b%c' \
-    'color' '$(coalesce "%D" "%V" "%B" "%A" "%F{${MNML_CLEAN_COLOR}}${MNML_CLEAN_CHAR}")'
+    'color' '$(coalesce "%D" "%V" "%B" "%A" "%C")'
 
   PS1='$(mnml_wrap MNML_PROMPT) '
   RPS1='$(mnml_wrap MNML_RPROMPT)'
