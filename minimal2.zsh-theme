@@ -1,25 +1,35 @@
 #
-# Minimal theme (zimfw version)
+# Minimal theme
 #
 # Original minimal theme for zsh written by subnixr:
 # https://github.com/subnixr/minimal
 #
 
 function {
-  # Global settings
-  MNML_OK_COLOR="${MNML_OK_COLOR:-green}"
-  MNML_ERR_COLOR="${MNML_ERR_COLOR:-red}"
-  # ADDED FOR ZIMFW
-  MNML_DIV_COLOR="${MNML_DIV_COLOR:-magenta}"
+  zstyle -s ':color:ok' minimal2 'MNML_OK_COLOR' || MNML_OK_COLOR=${MNML_OK_COLOR:-'green'}
+  zstyle -s ':color:error' minimal2 'MNML_ERR_COLOR' || MNML_ERR_COLOR=${MNML_ERR_COLOR:-'red'}
+  zstyle -s ':color:diverged' minimal2 'MNML_DIV_COLOR' || MNML_DIV_COLOR=${MNML_DIV_COLOR:-'magenta'}
+  zstyle -s ':color:dirty' minimal2 'MNML_DIRTY_COLOR' || MNML_DIRTY_COLOR=${MNML_DIRTY_COLOR:-'red'}
+  zstyle -s ':color:behind' minimal2 'MNML_BEHIND_COLOR' || MNML_BEHIND_COLOR=${MNML_BEHIND_COLOR:-'cyan'}
+  zstyle -s ':color:ahead' minimal2 'MNML_AHEAD_COLOR' || MNML_AHEAD_COLOR=${MNML_AHEAD_COLOR:-'cyan'}
 
-  MNML_USER_CHAR="${MNML_USER_CHAR:-λ}"
-  MNML_INSERT_CHAR="${MNML_INSERT_CHAR:-›}"
-  MNML_NORMAL_CHAR="${MNML_NORMAL_CHAR:-·}"
+  zstyle -s ':char:user' minimal2 'MNML_USER_CHAR' || MNML_USER_CHAR=${MNML_USER_CHAR:-'λ'}
+  zstyle -s ':char:insert' minimal2 'MNML_INSERT_CHAR' || MNML_INSERT_CHAR=${MNML_INSERT_CHAR:-'›'}
+  zstyle -s ':char:normal' minimal2 'MNML_NORMAL_CHAR' || MNML_NORMAL_CHAR=${MNML_NORMAL_CHAR:-'·'}
+  zstyle -s ':char:git:ahead' minimal2 'MNML_AHEAD_CHAR' || MNML_AHEAD_CHAR=${MNML_AHEAD_CHAR:-''}
+  zstyle -s ':char:git:behind' minimal2 'MNML_BEHIND_CHAR' || MNML_BEHIND_CHAR=${MNML_BEHIND_CHAR:-''}
+  zstyle -s ':char:git:dirty' minimal2 'MNML_DIRTY_CHAR' || MNML_DIRTY_CHAR=${MNML_DIRTY_CHAR:-''}
+  zstyle -s ':char:git:clean' minimal2 'MNML_CLEAN_CHAR' || MNML_CLEAN_CHAR=${MNML_CLEAN_CHAR:-''}
+  zstyle -s ':char:git:diverged' minimal2 'MNML_DIV_CHAR' || MNML_DIV_CHAR=${MNML_DIV_CHAR:-''}
 
+  zstyle -a ':config:prompt' minimal2 'MNML_PROMPT' || MNML_PROMPT=${MNML_PROMPT}
   [ "${+MNML_PROMPT}" -eq 0 ] && MNML_PROMPT=(mnml_ssh mnml_pyenv mnml_status mnml_keymap)
+  zstyle -a ':config:rprompt' minimal2 'MNML_RPROMPT' || MNML_RPROMPT=${MNML_RPROMPT}
   [ "${+MNML_RPROMPT}" -eq 0 ] && MNML_RPROMPT=('mnml_cwd 2 0' mnml_git)
+  zstyle -a ':config:infoline' minimal2 'MNML_INFOLN' || MNML_INFOLN=${MNML_INFOLN}
   [ "${+MNML_INFOLN}" -eq 0 ] && MNML_INFOLN=(mnml_err mnml_jobs mnml_uhp mnml_files)
 
+  zstyle -a ':config:magicenter' minimal2 'MNML_MAGICENTER' || MNML_MAGICENTER=${MNML_MAGICENTER}
   [ "${+MNML_MAGICENTER}" -eq 0 ] && MNML_MAGICENTER=(mnml_me_dirs mnml_me_ls mnml_me_git)
 }
 
@@ -222,12 +232,21 @@ prompt_minimal2_help() {
   This prompt can be customized by setting environment variables in your
   .zshrc:
 
-  - MNML_OK_COLOR: Color for successful things (default: 'green')
-  - MNML_ERR_COLOR: Color for failures (default: 'red')
-  - MNML_DIV_COLOR: Color for diverted git status (default: 'magenta')
-  - MNML_USER_CHAR: Character used for unprivileged users (default: 'λ')
-  - MNML_INSERT_CHAR: Character used for vi insert mode (default: '›')
-  - MNML_NORMAL_CHAR: Character used for vi normal mode (default: '·')
+  --> (Note: For zstyle configuration, please check README.md) <--
+
+  - MNML_OK_COLOR     : Color for successful things (default: 'green')
+  - MNML_ERR_COLOR    : Color for failures (default: 'red')
+  - MNML_DIV_COLOR    : Color for diverged git status (default: 'magenta')
+  - MNML_AHEAD_COLOR  : Color for repositories ahead of master (default: 'cyan')
+  - MNML_BEHIND_COLOR : Color for repositories behind of master (default: 'cyan')
+  - MNML_USER_CHAR    : Character used for unprivileged users (default: 'λ')
+  - MNML_INSERT_CHAR  : Character used for vi insert mode (default: '›')
+  - MNML_NORMAL_CHAR  : Character used for vi normal mode (default: '·')
+  - MNML_AHEAD_CHAR   : Character used for ahead status (default: none)
+  - MNML_BEHIND_CHAR  : Character used for behind status (default: none)
+  - MNML_DIRTY_CHAR   : Character used for dirty git status (default: none)
+  - MNML_CLEAN_CHAR   : Character used for clean git status (default: none)
+  - MNML_DIV_CHAR     : Character used for diverged git status (default: none)
 
   --------------------------------------------------------------------------
 
@@ -289,14 +308,14 @@ prompt_minimal2_setup() {
 
   zstyle ':zim:git-info:branch' format '%b'
   zstyle ':zim:git-info:commit' format '%c'
-  zstyle ':zim:git-info:dirty' format '%F{${MNML_ERR_COLOR}}'
-  zstyle ':zim:git-info:diverged' format '%F{${MNML_DIV_COLOR}}'
-  zstyle ':zim:git-info:behind' format '%F{${MNML_DIV_COLOR}}↓ '
-  zstyle ':zim:git-info:ahead' format '%F{${MNML_DIV_COLOR}}↑ '
+  zstyle ':zim:git-info:dirty' format '%F{${MNML_DIRTY_COLOR}}${MNML_DIRTY_CHAR}'
+  zstyle ':zim:git-info:diverged' format '%F{${MNML_DIV_COLOR}}${MNML_DIV_CHAR}'
+  zstyle ':zim:git-info:behind' format '%F{${MNML_DIRTY_COLOR}}${MNML_BEHIND_CHAR}'
+  zstyle ':zim:git-info:ahead' format '%F{${MNML_AHEAD_COLOR}}${MNML_AHEAD_CHAR}'
   zstyle ':zim:git-info:keys' format \
     'prompt' '' \
     'rprompt' '%b%c' \
-    'color' '$(coalesce "%D" "%V" "%B" "%A" "%F{${MNML_OK_COLOR}}")'
+    'color' '$(coalesce "%D" "%V" "%B" "%A" "%F{${MNML_CLEAN_COLOR}}${MNML_CLEAN_CHAR}")'
 
   PS1='$(mnml_wrap MNML_PROMPT) '
   RPS1='$(mnml_wrap MNML_RPROMPT)'
