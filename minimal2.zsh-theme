@@ -194,6 +194,7 @@ _mnml_me() {
     fi
   done
   echo -n "${(j:\n:)output}" | less -XFR
+  prompt_minimal2_precmd
 }
 
 # capture exit status and reset prompt
